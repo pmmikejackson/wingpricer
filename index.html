@@ -575,19 +575,38 @@
             const weatherCondition = document.getElementById('weatherCondition').value;
             const feedQuality = document.getElementById('feedQuality').value;
             const targetFoodCost = parseFloat(document.getElementById('targetFoodCost').value);
+            const volumeStrategy = document.getElementById('volumeStrategy').value;
+            const maxDiscount = parseFloat(document.getElementById('maxDiscount').value);
             
             const currentConditions = {
                 weather: weatherCondition,
                 feed: feedQuality
             };
             
-            const pricing = pricingAlgorithm.calculateOptimalPrice(currentConditions, targetFoodCost);
+            // Calculate group pricing with volume discounts
+            const pricing = pricingAlgorithm.calculateGroupPricing(currentConditions, targetFoodCost, volumeStrategy, maxDiscount);
             
-            // Update display
-            document.getElementById('recommendedPrice').textContent = `${pricing.recommendedPrice.toFixed(2)}`;
-            document.getElementById('costPerWing').textContent = `${pricing.predictedCost.toFixed(3)}`;
+            // Update individual wing metrics
+            document.getElementById('costPerWing').textContent = `$${pricing.predictedCost.toFixed(3)}`;
             document.getElementById('actualMargin').textContent = `${pricing.actualFoodCost.toFixed(1)}%`;
             document.getElementById('confidenceLevel').textContent = `${pricing.confidence}%`;
+            document.getElementById('volumeDiscount').textContent = `${pricing.maxVolumeDiscount.toFixed(1)}%`;
+            
+            // Update pricing grid for different quantities
+            pricing.groupPricing.forEach(tier => {
+                const priceElement = document.getElementById(`price${tier.quantity}`);
+                const perWingElement = document.getElementById(`perWing${tier.quantity}`);
+                
+                if (priceElement && perWingElement) {
+                    priceElement.textContent = `$${tier.totalPrice.toFixed(2)}`;
+                    perWingElement.textContent = `$${tier.pricePerWing.toFixed(2)} each`;
+                    
+                    // Add discount indicator if there's a discount
+                    if (tier.discount > 0) {
+                        perWingElement.textContent += ` (${tier.discount.toFixed(1)}% off)`;
+                    }
+                }
+            });
             
             updateDisplay();
         }
