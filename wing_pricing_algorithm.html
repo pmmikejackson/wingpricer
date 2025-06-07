@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Wing Pricing System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        .input-section, .results-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .section-title {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .price-tier {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            transition: transform 0.2s;
+        }
+        
+        .price-tier:hover {
+            transform: translateY(-3px);
+        }
+        
+        .tier-count {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .tier-price {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .tier-per-wing {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .metric-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .learning-info {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .data-log {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+        
+        .log-entry {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍗 Smart Wing Pricing System</h1>
+            <p>Adaptive algorithm that learns from your restaurant's unique patterns</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2 class="section-title">Order Data Entry</h2>
+                
+                <div class="input-group">
+                    <label>Purchase Weight (lbs)</label>
+                    <input type="number" id="purchaseWeight" step="0.1" placeholder="e.g., 50.5">
+                </div>
+                
+                <div class="input-group">
+                    <label>Purchase Cost ($)</label>
+                    <input type="number" id="purchaseCost" step="0.01" placeholder="e.g., 125.75">
+                </div>
+                
+                <div class="input-group">
+                    <label>Average Wings per Pound</label>
+                    <input type="number" id="wingsPerPound" step="0.1" placeholder="e.g., 8.5">
+                </div>
+                
+                <div class="input-group">
+                    <label>Weather Conditions</label>
+                    <select id="weatherCondition">
+                        <option value="excellent">Excellent (Cool, Dry)</option>
+                        <option value="good">Good (Mild)</option>
+                        <option value="fair">Fair (Warm/Humid)</option>
+                        <option value="poor">Poor (Hot/Stormy)</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Feed Quality</label>
+                    <select id="feedQuality">
+                        <option value="premium">Premium</option>
+                        <option value="standard">Standard</option>
+                        <option value="economy">Economy</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Target Food Cost (%)</label>
+                    <input type="number" id="targetFoodCost" value="30" min="20" max="40">
+                    <small style="color: #666; font-size: 12px;">Industry standard: 25-35% (QSR: 20-25%, Casual: 25-30%, Fine Dining: 30-35%)</small>
+                </div>
+                
+                <div class="input-group">
+                    <label>Volume Discount Strategy</label>
+                    <select id="volumeStrategy">
+                        <option value="linear">Linear Discount (same % off per tier)</option>
+                        <option value="aggressive">Aggressive (encourage large orders)</option>
+                        <option value="minimal">Minimal (maintain margins)</option>
+                        <option value="custom">Custom Discount Per Tier</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Maximum Volume Discount (%)</label>
+                    <input type="number" id="maxDiscount" value="15" min="5" max="30">
+                    <small style="color: #666; font-size: 12px;">Typical range: 10-20% for largest order size</small>
+                </div>
+                
+                <button class="btn" onclick="addOrderData()">Add Order Data</button>
+                <button class="btn" onclick="calculatePricing()">Calculate Optimal Price</button>
+            </div>
+            
+            <div class="results-section">
+                <h2 class="section-title">Menu Pricing</h2>
+                
+                <div class="pricing-grid">
+                    <div class="price-tier">
+                        <div class="tier-count">6 Wings</div>
+                        <div class="tier-price" id="price6">$0.00</div>
+                        <div class="tier-per-wing" id="perWing6">$0.00 each</div>
+                    </div>
+                    <div class="price-tier">
+                        <div class="tier-count">10 Wings</div>
+                        <div class="tier-price" id="price10">$0.00</div>
+                        <div class="tier-per-wing" id="perWing10">$0.00 each</div>
+                    </div>
+                    <div class="price-tier">
+                        <div class="tier-count">15 Wings</div>
+                        <div class="tier-price" id="price15">$0.00</div>
+                        <div class="tier-per-wing" id="perWing15">$0.00 each</div>
+                    </div>
+                    <div class="price-tier">
+                        <div class="tier-count">20 Wings</div>
+                        <div class="tier-price" id="price20">$0.00</div>
+                        <div class="tier-per-wing" id="perWing20">$0.00 each</div>
+                    </div>
+                </div>
+                
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="costPerWing">$0.00</div>
+                        <div class="metric-label">Cost Per Wing</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="actualMargin">30%</div>
+                        <div class="metric-label">Food Cost %</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="totalOrders">0</div>
+                        <div class="metric-label">Orders Learned</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="volumeDiscount">0%</div>
+                        <div class="metric-label">Max Volume Discount</div>
+                    </div>
+                </div>
+                
+                <div class="learning-info">
+                    <h3>🧠 Algorithm Learning Status</h3>
+                    <p id="learningStatus">Ready to learn from your first order...</p>
+                    <p><strong>Confidence Level:</strong> <span id="confidenceLevel">0%</span></p>
+                </div>
+                
+                <div class="data-log">
+                    <h4>Recent Order History</h4>
+                    <div id="orderLog">No orders recorded yet.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class WingPricingAlgorithm {
+            constructor() {
+                this.orderHistory = [];
+                this.weightFactors = {
+                    weather: { excellent: 1.1, good: 1.0, fair: 0.9, poor: 0.8 },
+                    feed: { premium: 1.2, standard: 1.0, economy: 0.85 }
+                };
+                this.learningRate = 0.1;
+                this.basePrice = 0;
+            }
+            
+            addOrder(orderData) {
+                // Calculate actual cost per wing for this order
+                const costPerWing = orderData.purchaseCost / (orderData.purchaseWeight * orderData.wingsPerPound);
+                
+                // Apply quality factors
+                const weatherMultiplier = this.weightFactors.weather[orderData.weatherCondition];
+                const feedMultiplier = this.weightFactors.feed[orderData.feedQuality];
+                
+                const adjustedOrder = {
+                    ...orderData,
+                    costPerWing: costPerWing,
+                    qualityScore: weatherMultiplier * feedMultiplier,
+                    timestamp: new Date(),
+                    effectiveCost: costPerWing / (weatherMultiplier * feedMultiplier)
+                };
+                
+                this.orderHistory.push(adjustedOrder);
+                this.updateModel();
+                this.logOrder(adjustedOrder);
+            }
+            
+            updateModel() {
+                if (this.orderHistory.length === 0) return;
+                
+                // Calculate weighted average cost considering quality factors
+                let totalWeightedCost = 0;
+                let totalWeight = 0;
+                
+                // Give more weight to recent orders
+                this.orderHistory.forEach((order, index) => {
+                    const recencyWeight = Math.exp(-0.1 * (this.orderHistory.length - index - 1));
+                    const qualityWeight = order.qualityScore;
+                    const combinedWeight = recencyWeight * qualityWeight;
+                    
+                    totalWeightedCost += order.effectiveCost * combinedWeight;
+                    totalWeight += combinedWeight;
+                });
+                
+                this.basePrice = totalWeightedCost / totalWeight;
+                
+                // Update learning factors based on variance
+                this.updateWeightFactors();
+            }
+            
+            updateWeightFactors() {
+                if (this.orderHistory.length < 3) return;
+                
+                // Analyze correlation between conditions and actual costs
+                const weatherGroups = {};
+                const feedGroups = {};
+                
+                this.orderHistory.forEach(order => {
+                    if (!weatherGroups[order.weatherCondition]) {
+                        weatherGroups[order.weatherCondition] = [];
+                    }
+                    if (!feedGroups[order.feedQuality]) {
+                        feedGroups[order.feedQuality] = [];
+                    }
+                    
+                    weatherGroups[order.weatherCondition].push(order.costPerWing);
+                    feedGroups[order.feedQuality].push(order.costPerWing);
+                });
+                
+                // Adjust factors based on observed patterns
+                Object.keys(weatherGroups).forEach(condition => {
+                    if (weatherGroups[condition].length > 1) {
+                        const avgCost = weatherGroups[condition].reduce((a, b) => a + b) / weatherGroups[condition].length;
+                        const overallAvg = this.orderHistory.reduce((sum, order) => sum + order.costPerWing, 0) / this.orderHistory.length;
+                        
+                        const observedFactor = avgCost / overallAvg;
+                        this.weightFactors.weather[condition] = 
+                            this.weightFactors.weather[condition] * (1 - this.learningRate) + 
+                            observedFactor * this.learningRate;
+                    }
+                });
+            }
+            
+            calculateOptimalPrice(currentConditions, targetFoodCost) {
+                if (this.orderHistory.length === 0) {
+                    return this.estimateInitialPrice(currentConditions, targetFoodCost);
+                }
+                
+                const weatherMultiplier = this.weightFactors.weather[currentConditions.weather];
+                const feedMultiplier = this.weightFactors.feed[currentConditions.feed];
+                
+                const predictedCost = this.basePrice / (weatherMultiplier * feedMultiplier);
+                
+                // Calculate price to achieve target food cost percentage
+                // If food cost should be 30% of menu price, then: cost / price = 0.30
+                // Therefore: price = cost / (targetFoodCost / 100)
+                const optimalPrice = predictedCost / (targetFoodCost / 100);
+                
+                return {
+                    recommendedPrice: optimalPrice,
+                    predictedCost: predictedCost,
+                    actualFoodCost: (predictedCost / optimalPrice) * 100,
+                    confidence: Math.min(95, this.orderHistory.length * 10)
+                };
+            }
+            
+            calculateGroupPricing(currentConditions, targetFoodCost, volumeStrategy, maxDiscount) {
+                const basePricing = this.calculateOptimalPrice(currentConditions, targetFoodCost);
+                const basePrice = basePricing.recommendedPrice;
+                
+                const wingQuantities = [6, 10, 15, 20];
+                const discountStrategies = {
+                    linear: [0, 5, 10, 15],
+                    aggressive: [0, 8, 15, 20],
+                    minimal: [0, 2, 5, 8],
+                    custom: [0, 5, 10, maxDiscount]
+                };
+                
+                let discounts = discountStrategies[volumeStrategy] || discountStrategies.linear;
+                
+                // Scale discounts to maxDiscount
+                const maxStrategyDiscount = Math.max(...discounts);
+                if (maxStrategyDiscount > 0) {
+                    discounts = discounts.map(d => (d / maxStrategyDiscount) * maxDiscount);
+                }
+                
+                const groupPricing = wingQuantities.map((qty, index) => {
+                    const discount = discounts[index] || 0;
+                    const discountedPrice = basePrice * (1 - discount / 100);
+                    const totalPrice = discountedPrice * qty;
+                    
+                    return {
+                        quantity: qty,
+                        pricePerWing: discountedPrice,
+                        totalPrice: totalPrice,
+                        discount: discount,
+                        actualFoodCost: (basePricing.predictedCost / discountedPrice) * 100
+                    };
+                });
+                
+                return {
+                    ...basePricing,
+                    groupPricing: groupPricing,
+                    maxVolumeDiscount: Math.max(...discounts)
+                };
+            }
+            
+            estimateInitialPrice(conditions, targetFoodCost) {
+                // Initial estimate based on typical industry standards
+                const baseCostEstimate = 0.35; // $0.35 per wing typical
+                const weatherMultiplier = this.weightFactors.weather[conditions.weather];
+                const feedMultiplier = this.weightFactors.feed[conditions.feed];
+                
+                const adjustedCost = baseCostEstimate / (weatherMultiplier * feedMultiplier);
+                const price = adjustedCost / (targetFoodCost / 100);
+                
+                return {
+                    recommendedPrice: price,
+                    predictedCost: adjustedCost,
+                    actualFoodCost: targetFoodCost,
+                    confidence: 10
+                };
+            }
+            
+            logOrder(order) {
+                const logElement = document.getElementById('orderLog');
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.innerHTML = `
+                    <strong>${order.timestamp.toLocaleDateString()}</strong> - 
+                    ${order.purchaseWeight}lbs @ $${order.costPerWing.toFixed(3)}/wing 
+                    (${order.weatherCondition}/${order.feedQuality})
+                `;
+                
+                if (logElement.children.length >= 10) {
+                    logElement.removeChild(logElement.lastChild);
+                }
+                
+                if (logElement.textContent.includes('No orders')) {
+                    logElement.innerHTML = '';
+                }
+                
+                logElement.insertBefore(entry, logElement.firstChild);
+            }
+            
+            getConfidenceLevel() {
+                return Math.min(95, this.orderHistory.length * 8);
+            }
+            
+            getLearningStatus() {
+                const orders = this.orderHistory.length;
+                if (orders === 0) return "Ready to learn from your first order...";
+                if (orders < 5) return `Learning basic patterns (${orders}/5 orders for baseline)`;
+                if (orders < 15) return `Building predictive model (${orders}/15 orders for good accuracy)`;
+                return `Fully trained model with ${orders} orders - High accuracy predictions`;
+            }
+        }
+        
+        // Initialize the algorithm
+        const pricingAlgorithm = new WingPricingAlgorithm();
+        
+        function addOrderData() {
+            const purchaseWeight = parseFloat(document.getElementById('purchaseWeight').value);
+            const purchaseCost = parseFloat(document.getElementById('purchaseCost').value);
+            const wingsPerPound = parseFloat(document.getElementById('wingsPerPound').value);
+            const weatherCondition = document.getElementById('weatherCondition').value;
+            const feedQuality = document.getElementById('feedQuality').value;
+            
+            if (!purchaseWeight || !purchaseCost || !wingsPerPound) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            const orderData = {
+                purchaseWeight,
+                purchaseCost,
+                wingsPerPound,
+                weatherCondition,
+                feedQuality
+            };
+            
+            pricingAlgorithm.addOrder(orderData);
+            
+            // Clear form
+            document.getElementById('purchaseWeight').value = '';
+            document.getElementById('purchaseCost').value = '';
+            document.getElementById('wingsPerPound').value = '';
+            
+            // Update displays
+            updateDisplay();
+            
+            alert('Order data added successfully! The algorithm is learning...');
+        }
+        
+        function calculatePricing() {
+            const weatherCondition = document.getElementById('weatherCondition').value;
+            const feedQuality = document.getElementById('feedQuality').value;
+            const targetFoodCost = parseFloat(document.getElementById('targetFoodCost').value);
+            
+            const currentConditions = {
+                weather: weatherCondition,
+                feed: feedQuality
+            };
+            
+            const pricing = pricingAlgorithm.calculateOptimalPrice(currentConditions, targetFoodCost);
+            
+            // Update display
+            document.getElementById('recommendedPrice').textContent = `${pricing.recommendedPrice.toFixed(2)}`;
+            document.getElementById('costPerWing').textContent = `${pricing.predictedCost.toFixed(3)}`;
+            document.getElementById('actualMargin').textContent = `${pricing.actualFoodCost.toFixed(1)}%`;
+            document.getElementById('confidenceLevel').textContent = `${pricing.confidence}%`;
+            
+            updateDisplay();
+        }
+        
+        function updateDisplay() {
+            document.getElementById('totalOrders').textContent = pricingAlgorithm.orderHistory.length;
+            document.getElementById('learningStatus').textContent = pricingAlgorithm.getLearningStatus();
+            document.getElementById('confidenceLevel').textContent = `${pricingAlgorithm.getConfidenceLevel()}%`;
+        }
+        
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
